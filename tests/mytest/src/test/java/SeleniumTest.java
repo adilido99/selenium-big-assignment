@@ -40,103 +40,108 @@ public class SeleniumTest {
     }
 
 
-    // @Test
-    // public void testLoadMainPageAndRegistration()
-    // {
-    //     /* load the main page */
-    //     MainPage mainPage = new MainPage(this.driver);
+    @Test
+    public void testLoadMainPageAndRegistration()
+    {
+        /* load the main page */
+        MainPage mainPage = new MainPage(this.driver);
         
         
-    //     /* navigate to registration page and check that we are at the right page */
-    //     RegistrationPage registrationPageResult = mainPage.openRegistrationPage();
+        /* navigate to registration page and check that we are at the right page */
+        RegistrationPage registrationPageResult = mainPage.openRegistrationPage();
         
-    //     /* Check if we are at the right page */
-    //     Assert.assertTrue(registrationPageResult.getHeaderMessage(registrationPageResult.headerMessageLocator).contains("Create New Customer Account"));
+        /* Check if we are at the right page */
+        Assert.assertTrue(registrationPageResult.getHeaderMessage(registrationPageResult.headerMessageLocator).contains("Create New Customer Account"));
     
 
-    //     /* user registration and navigate to profile page */
+        /* user registration and navigate to profile page */
+        ProfilePage profilePageResult = registrationPageResult.register("adil" , "benamor","adil2153@gmail.com" , "Adilido230799" );
 
-    //     ProfilePage profilePageResult = registrationPageResult.register("adil" , "benamor","adil2153@gmail.com" , "Adilido230799" );
+        /* check if we are at the profile page after registration */
+        Assert.assertTrue(profilePageResult.getHeaderMessage(profilePageResult.headerMessageLocator).contains("My Account"));
 
-    //     /* check if we are at the profile page after registration */
-    //     Assert.assertTrue(profilePageResult.getHeaderMessage(profilePageResult.headerMessageLocator).contains("My Account"));
+    }
 
-    // }
-
-    // @Test
-    // public void testLoadMainPageAndLogin()
-    // {
-    //     /* load the main page */
-    //     MainPage mainPage = new MainPage(this.driver);
+    @Test
+    public void testLoadMainPageAndLogin()
+    {
+        /* load the main page */
+        MainPage mainPage = new MainPage(this.driver);
         
         
-    //     /* navigate to login page and check that we are at the right page */
-    //     LoginPage loginPageResult = mainPage.openLoginPage();
+        /* navigate to login page and check that we are at the right page */
+        LoginPage loginPageResult = mainPage.openLoginPage();
         
 
-    //     /* Check if we are at the right page */
-    //     Assert.assertTrue(loginPageResult.getHeaderMessage(loginPageResult.headerMessageLocator).contains("Customer Login"));
+        /* Check if we are at the right page */
+        Assert.assertTrue(loginPageResult.getHeaderMessage(loginPageResult.headerMessageLocator).contains("Customer Login"));
     
 
-    //     /* user login and navigate to profile page */
-    //     MainPage mainPageResult = loginPageResult.login( "adil2153@gmail.com" , "Adilido230799" );
+        /* user login and navigate to profile page */
+        MainPage mainPageResult = loginPageResult.login( "adil2153@gmail.com" , "Adilido230799" );
 
 
-    //     /* check if we are at the page after login */
-    //     Assert.assertTrue(mainPageResult.getHeaderMessage(mainPageResult.headerMessageLocator).contains("Welcome, adil benamor!"));
+        /* check if we are at the page after login */
+        Assert.assertTrue(mainPageResult.getHeaderMessage(mainPageResult.headerMessageLocator).contains("Welcome, adil benamor!"));
 
-    //     /* logout from main page */
-    //     MainPage newMainPageResult = mainPageResult.logout();
-    //     //System.out.println(newMainPageResult.getHeaderMessage(newMainPageResult.headerMessageLocator));
-    //     Assert.assertTrue(mainPageResult.getHeaderMessage(mainPageResult.headerMessageLocator).contains("Default welcome msg!"));
+        /* logout and redirect to main page */
+        MainPage newMainPageResult = mainPageResult.logout();
+        Assert.assertTrue(mainPageResult.getHeaderMessage(mainPageResult.headerMessageLocator).contains("Default welcome msg!"));
 
-
-    //     // SearchResultPage searchResultPage =  mainPageResult.search("bag");
-    //     // System.out.println(searchResultPage.getBodyText());
+    }
 
 
-    // }
+    @Test
+    public void testMultipleLoadPages()
+    {
+         String[] pageUrls={
+            "https://magento.softwaretestingboard.com/",
+            "https://magento.softwaretestingboard.com/customer/account/login/referer/aHR0cHM6Ly9tYWdlbnRvLnNvZnR3YXJldGVzdGluZ2JvYXJkLmNvbS8%2C/",
+            "https://magento.softwaretestingboard.com/customer/account/create/"}; 
 
+        for(String url : pageUrls) 
+        {  
+            StaticPage res = new StaticPage(this.driver , url);
+            Assert.assertEquals(url , res.getTestUrl());
+            /** we can test by getting the page title..... */
+        }  
+    }
 
-    // @Test
-    // public void testMultipleLoadPages()
-    // {
-    //      String[] pageUrls={
-    //         "https://magento.softwaretestingboard.com/",
-    //         "https://magento.softwaretestingboard.com/customer/account/login/referer/aHR0cHM6Ly9tYWdlbnRvLnNvZnR3YXJldGVzdGluZ2JvYXJkLmNvbS8%2C/",
-    //         "https://magento.softwaretestingboard.com/customer/account/create/"}; 
+    @Test
+    public void testSearchWithRandomData()
+    {
+        /* generate random data */
+            String[] randomData = new String[5];
+            Faker faker = new Faker();
 
-    //     for(String url : pageUrls) 
-    //     {  
-    //         StaticPage res = new StaticPage(this.driver , url);
-    //         Assert.assertEquals(url , res.getTestUrl());
-    //     }  
-    // }
+            /** create our random data array */
+            for(int i=0;i<5;i++)
+            {
+                randomData[i] = faker.commerce().productName().split(" ")[2];
+                System.out.println(randomData[i]);
+            }
 
-    // @Test
-    // public void testSearchWithRandomData()
-    // {
-    //     /* generate random data */
-    //         String[] randomData = new String[5];
-    //         Faker faker = new Faker();
-    //         for(int i=0;i<5;i++)
-    //         {
-    //             randomData[i] = faker.commerce().productName().split(" ")[2];
-    //             System.out.println(randomData[i]);
-    //         }
+        /* load main page */
+        MainPage mainPage = new MainPage(this.driver);
 
-    //     /* load main page */
-    //     MainPage mainPage = new MainPage(this.driver);
+        for(String data : randomData) 
+        {  
+            /* fill the search bar with our generated data */
+             mainPage.search(data);
 
-    //     for(String data : randomData) 
-    //     {  
-    //         /* fill the search bar with our generated data */
-    //          mainPage.search(data);
+             /* add assert for checking the page */
+            //-----------------------------------------------------
 
-    //          /* navigate back to main page */
-    //          this.driver.navigate().back();
-    //     }  
-    // }
+             /* navigate back to main page */
+             this.driver.navigate().back();
+        }  
+    }
+
+    @Test
+    public void loginAndSendFormTest()
+    {
+
+    }
 
     @Test
     public void hoverTest()
