@@ -75,7 +75,6 @@ public class SeleniumTest {
 
 
         /* check if we are at the page after login */
-        sleep(5000);
         Assert.assertTrue(mainPageResult.getBodyText().contains("Welcome, mourad maarouf!"));
 
         /* logout and redirect to main page */
