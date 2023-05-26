@@ -17,6 +17,9 @@ class MainPage extends PageBase {
     /* page header locator */
     protected By headerMessageLocator = By.xpath( " //ul[contains(@class,'header links')]//li[1]//span " );
 
+    /* subscription header locator */
+    protected By subscribeHeaderLocator = By.xpath(" //div[contains(@class,'page messages')]//div[2]//div//div//div ");
+
     /* sign up and sign in button locator */
     private By signupLocator = By.xpath("//div[contains(@class,'panel header')]//ul//li[3]//a");
     private By signinLocator = By.xpath("//div[contains(@class,'panel header')]//ul//li[2]//a");
@@ -31,6 +34,10 @@ class MainPage extends PageBase {
     /* hover element locators */
     private By mainMenuLocator = By.xpath(" //nav[contains(@class,'navigation')]//ul//li[contains(@class,'nav-6')]//a " );
     private By subMenuLocator = By.xpath(" //nav[contains(@class,'navigation')]//ul//li[contains(@class,'nav-4')]//ul//li[contains(@class,'nav-4-3')]//a " ); 
+
+    /* subscription locators */
+    private By inputSubscribeLocator = By.xpath(" //form[contains(@class,'form subscribe')]//div[1]//div//label//input " );
+    private By subscribeButtonLocator = By.xpath("  //form[contains(@class,'form subscribe')]//div[2]//button " );
 
     
     public MainPage(WebDriver driver ) {
@@ -74,6 +81,20 @@ class MainPage extends PageBase {
         actions.click(mainMenu).perform();
 
         return new SalePage(this.driver);
+    }
+
+    public SubscriptionPage subscribe(String email)
+    {
+        this.waitAndReturnElement(inputSubscribeLocator).sendKeys(email);
+        this.waitAndReturnElement(subscribeButtonLocator).click();
+
+        return new SubscriptionPage(this.driver);
+    }
+
+    public String getHeaderMessageLogin()
+    {
+        WebElement bodyElement = this.waitAndReturnElement2(headerMessageLocator);
+        return bodyElement.getText();
     }
 
 }

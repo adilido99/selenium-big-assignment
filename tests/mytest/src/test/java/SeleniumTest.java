@@ -11,29 +11,22 @@ import org.openqa.selenium.support.ui.*;
 import org.junit.*;
 
 import com.github.javafaker.Faker;
-import org.apache.commons.lang3.RandomStringUtils;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SeleniumTest {
 	
 	private WebDriver driver;
-	
-	// private By bodyLocator = By.tagName("body");
-	// private By usernameFieldLocator = By.name("username");
-	// private By passwordFieldLocator = By.name("password");
-
-	// private By loginButtonLocator = By.className("radius");
-    // private By logoutButtonLocator = By.className("secondary");
-
-    // private By alertMessageLocator = By.id("flash");
-	
 	
     @Before
     public void setup() throws MalformedURLException
     {
 		ChromeOptions options = new ChromeOptions();
 
-        /* Disables the Web Notification and the Push APIs. */
-        options.addArguments("--disable-notifications");
+        /* Open the Web in incognito mode */
+        options.addArguments("incognito");
 
 		this.driver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
 		this.driver.manage().window().maximize();
@@ -41,7 +34,7 @@ public class SeleniumTest {
 
 
     @Test
-    public void testLoadMainPageAndRegistration()
+    public void testA_LoadMainPageAndRegister()
     {
         /* load the main page */
         MainPage mainPage = new MainPage(this.driver);
@@ -55,7 +48,7 @@ public class SeleniumTest {
     
 
         /* user registration and navigate to profile page */
-        ProfilePage profilePageResult = registrationPageResult.register("adil" , "benamor","adil2153@gmail.com" , "Adilido230799" );
+        ProfilePage profilePageResult = registrationPageResult.register("mourad" , "maarouf","mourad.mrf123@gmail.com" , "Testing123456" );
 
         /* check if we are at the profile page after registration */
         Assert.assertTrue(profilePageResult.getHeaderMessage(profilePageResult.headerMessageLocator).contains("My Account"));
@@ -63,7 +56,7 @@ public class SeleniumTest {
     }
 
     @Test
-    public void testLoadMainPageAndLogin()
+    public void testB_LoadMainPageAndLogin()
     {
         /* load the main page */
         MainPage mainPage = new MainPage(this.driver);
@@ -78,11 +71,12 @@ public class SeleniumTest {
     
 
         /* user login and navigate to profile page */
-        MainPage mainPageResult = loginPageResult.login( "adil2153@gmail.com" , "Adilido230799" );
+        MainPage mainPageResult = loginPageResult.login( "mourad.mrf123@gmail.com" , "Testing123456" );
 
 
         /* check if we are at the page after login */
-        Assert.assertTrue(mainPageResult.getHeaderMessage(mainPageResult.headerMessageLocator).contains("Welcome, adil benamor!"));
+        sleep(5000);
+        Assert.assertTrue(mainPageResult.getBodyText().contains("Welcome, mourad maarouf!"));
 
         /* logout and redirect to main page */
         MainPage newMainPageResult = mainPageResult.logout();
@@ -92,7 +86,7 @@ public class SeleniumTest {
 
 
     @Test
-    public void testMultipleLoadPages()
+    public void testC_LoadMultiplePages()
     {
          String[] pageUrls={
             "https://magento.softwaretestingboard.com/",
@@ -103,12 +97,11 @@ public class SeleniumTest {
         {  
             StaticPage res = new StaticPage(this.driver , url);
             Assert.assertEquals(url , res.getTestUrl());
-            /** we can test by getting the page title..... */
         }  
     }
 
     @Test
-    public void testSearchWithRandomData()
+    public void testD_SearchWithRandomData()
     {
         /* generate random data */
             String[] randomData = new String[5];
@@ -118,33 +111,51 @@ public class SeleniumTest {
             for(int i=0;i<5;i++)
             {
                 randomData[i] = faker.commerce().productName().split(" ")[2];
-                System.out.println(randomData[i]);
+                //System.out.println(randomData[i]);
             }
 
         /* load main page */
         MainPage mainPage = new MainPage(this.driver);
+        SearchResultPage searchResultPage = null;
 
         for(String data : randomData) 
         {  
             /* fill the search bar with our generated data */
-             mainPage.search(data);
+             searchResultPage =  mainPage.search(data);
 
              /* add assert for checking the page */
-            //-----------------------------------------------------
+            Assert.assertTrue( searchResultPage.getHeaderMessage(searchResultPage.headerMessageLocator).contains( "Search results for: '"+ data +"'"));
 
              /* navigate back to main page */
-             this.driver.navigate().back();
+             this.driver.navigate().back() ;
+             Assert.assertEquals("https://magento.softwaretestingboard.com/" , this.driver.getCurrentUrl() );
         }  
     }
 
     @Test
-    public void loginAndSendFormTest()
+    public void testE_LoginAndSubscribe()
     {
+        /* load main page */
+         MainPage mainPage = new MainPage(this.driver);
 
+        /* navigate to login page and check that we are at the right page */
+         LoginPage loginPageResult = mainPage.openLoginPage();
+        
+
+         /* Check if we are at the right page */
+         Assert.assertTrue(loginPageResult.getHeaderMessage(loginPageResult.headerMessageLocator).contains("Customer Login"));
+    
+
+         /* user login and navigate to profile page */
+         MainPage mainPageResult = loginPageResult.login( "mourad.mrf123@gmail.com" , "Testing123456" );
+
+         /* sign for the newsletter  */
+         SubscriptionPage res = mainPage.subscribe("mour213@gmail.com");
+         Assert.assertTrue(res.getHeaderMessage(res.subscribeHeaderLocator).contains("Thank you for your subscription."));
     }
 
     @Test
-    public void hoverTest()
+    public void testF_Hover()
     {
         /* load main page */
         MainPage mainPage = new MainPage(this.driver);

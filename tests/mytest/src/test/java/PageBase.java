@@ -18,13 +18,20 @@ class PageBase {
     
     public PageBase(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, 20);
+        this.wait = new WebDriverWait(driver, 30);
     }
     
     protected WebElement waitAndReturnElement(By locator) {
         
         /* explicit wait */
         this.wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        return this.driver.findElement(locator);
+    } 
+
+    protected WebElement waitAndReturnElement2(By locator) {
+        
+        /* explicit wait */
+        this.wait.until(ExpectedConditions.textToBePresentInElementValue(locator , "Welcome, mourad maarouf!"));
         return this.driver.findElement(locator);
     } 
     
